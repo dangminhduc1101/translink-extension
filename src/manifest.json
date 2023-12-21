@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,   
+  "name": "TransLink Browser Extension",
+    "version": "0.0.1",
+    "description": "Never miss another bus at SFU again!",
+    "background": {
+        "scripts": [
+            "./background/script.ts"
+        ]
+    },
+    "browser_action": {
+        "default_popup": "./index.html"
+    }
+}

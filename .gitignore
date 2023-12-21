@@ -1,0 +1,6 @@
+.parcel-cache
+*.log*
+dist/
+build/
+node_modules/
+.vscode

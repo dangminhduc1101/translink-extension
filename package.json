@@ -1,0 +1,39 @@
+{
+  "name": "translink-web-extension",
+  "version": "1.0.0",
+  "author": "Duc Dang <duc_dang@sfu.ca>",
+  "license": "MIT",
+  "scripts": {
+    "purge": "rm -rf ./.parcel-cache ./dist",
+    "launch": "web-ext run",
+    "watch": "parcel watch ./src/manifest.json --config @parcel/config-webextension --host localhost",
+    "debug": "(npm run purge && sleep 2 && npm run launch) & npm run watch; wait %1",
+    "build": "npm run purge && parcel build ./src/manifest.json --config @parcel/config-webextension"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@parcel/config-webextension": "^2.10.3",
+    "@types/chrome": "^0.0.254",
+    "@types/firefox-webext-browser": "^120.0.0",
+    "@types/react": "^18.2.45",
+    "@types/react-dom": "^18.2.18",
+    "parcel": "^2.10.3",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.3.3",
+    "web-ext": "^7.9.0"
+  },
+  "webExt": {
+    "sourceDir": "./dist"
+  },
+  "postcss": {
+    "plugins": {
+      "tailwindcss": {
+        "config": "./tailwind.config.js"
+      }
+    }
+  }
+}
