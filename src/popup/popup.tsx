@@ -1,15 +1,16 @@
 import dayjs, { Dayjs } from "dayjs";
 import React, { useEffect, useState } from "react";
+import { BusEstimate } from "../types/translink";
 
 const Popup: React.FC = () => {
   const currentTime: Dayjs = dayjs();
-  const [schedule, setSchedule] = useState<any>(null);
+  const [busEstimates, setBusEstimates] = useState<BusEstimate[]>([]);
 
   useEffect(() => {
     browser.runtime
-      .sendMessage({ type: "get-schedule" })
+      .sendMessage({ type: "get-bus-estimates" })
       .then((response) => {
-        setSchedule(response);
+        setBusEstimates(response);
       })
       .catch((error) => console.error(error));
   }, []);
@@ -31,8 +32,8 @@ const Popup: React.FC = () => {
 
       <div className="bg-gray-800 min-h-screen text-gray-100 flex justify-center">
         <div className="max-w-5xl w-full">
-          {schedule && schedule.length > 0 ? (
-            <div>{schedule.length}</div>
+          {busEstimates && busEstimates.length > 0 ? (
+            <div>{busEstimates.length}</div>
           ) : (
             <div>No schedule available</div>
           )}

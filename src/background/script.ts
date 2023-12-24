@@ -1,11 +1,15 @@
+import { BusEstimate, StopEstimate, Schedule } from "../types/translink";
 import API from "./api.json";
 
-let busSchedule: any = null;
+let busEstimates: BusEstimate[] = [];
 
-const getBusData = async (): Promise<any | null> => {
+const getStopEstimates = async (
+  stopId: number,
+  timeframe: number
+): Promise<StopEstimate[] | null> => {
   try {
     const response = await fetch(
-      `https://api.translink.ca/rttiapi/v1/stops/51862/estimates?apikey=${API.key}&timeframe=120`,
+      `https://api.translink.ca/rttiapi/v1/stops/${stopId}/estimates?apikey=${API.key}&timeframe=${timeframe}`,
       {
         method: "GET",
         headers: {
@@ -25,27 +29,28 @@ const getBusData = async (): Promise<any | null> => {
   }
 };
 
-const parseBusSchedule = (data: any): Array<any> =>
-  data.flatMap((bus: any) =>
-    bus.Schedules.map((schedule: any) => ({
-      ...schedule,
-      RouteNo: bus.RouteNo,
-      RouteName: bus.RouteName,
-    }))
-  );
+const toBusEstimates = (data: StopEstimate[] | null): BusEstimate[] =>
+  data
+    ? data.flatMap((estimate: StopEstimate) =>
+        estimate.Schedules.map((schedule: Schedule) => ({
+          Schedule: schedule,
+          RouteNo: estimate.RouteNo,
+          RouteName: estimate.RouteName,
+        }))
+      )
+    : [];
+
+const updateBusEstimates: () => Promise<void> = (async () => {
+  busEstimates = toBusEstimates(await getStopEstimates(51862, 120));
+  console.log(busEstimates);
+})
 
 browser.runtime.onInstalled.addListener(() => {
-  (async () => {
-    const result = await getBusData();
-    if (result) {
-      busSchedule = parseBusSchedule(result);
-    }
-  })()
+  updateBusEstimates();
 });
 
 browser.runtime.onMessage.addListener((message, _, sendResponse) => {
   if (message.type == "get-schedule") {
-    sendResponse(busSchedule);
+    sendResponse(busEstimates);
   }
 });
-
