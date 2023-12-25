@@ -1,4 +1,4 @@
-import { BusEstimate, StopEstimate, Schedule } from "../types/translink";
+import { BusEstimate, StopEstimate, Schedule } from "../types";
 import API from "./api.json";
 
 let busEstimates: BusEstimate[] = [];
@@ -41,8 +41,7 @@ const toBusEstimates = (data: StopEstimate[] | null): BusEstimate[] =>
     : [];
 
 const updateBusEstimates: () => Promise<void> = (async () => {
-  busEstimates = toBusEstimates(await getStopEstimates(51862, 120));
-  console.log(busEstimates);
+  busEstimates = toBusEstimates(await getStopEstimates(51862, 240));
 })
 
 browser.runtime.onInstalled.addListener(() => {
@@ -50,7 +49,7 @@ browser.runtime.onInstalled.addListener(() => {
 });
 
 browser.runtime.onMessage.addListener((message, _, sendResponse) => {
-  if (message.type == "get-schedule") {
+  if (message.action == "get-bus-estimates") {
     sendResponse(busEstimates);
   }
 });

@@ -1,6 +1,7 @@
 import dayjs, { Dayjs } from "dayjs";
 import React, { useEffect, useState } from "react";
-import { BusEstimate } from "../types/translink";
+import { BusEstimate } from "../types";
+import BusCard from "./components/BusCard";
 
 const Popup: React.FC = () => {
   const currentTime: Dayjs = dayjs();
@@ -8,7 +9,7 @@ const Popup: React.FC = () => {
 
   useEffect(() => {
     browser.runtime
-      .sendMessage({ type: "get-bus-estimates" })
+      .sendMessage({ action: "get-bus-estimates" })
       .then((response) => {
         setBusEstimates(response);
       })
@@ -32,11 +33,13 @@ const Popup: React.FC = () => {
 
       <div className="bg-gray-800 min-h-screen text-gray-100 flex justify-center">
         <div className="max-w-5xl w-full">
-          {busEstimates && busEstimates.length > 0 ? (
-            <div>{busEstimates.length}</div>
-          ) : (
-            <div>No schedule available</div>
-          )}
+          <div>
+            {busEstimates && busEstimates.length > 0
+              ? busEstimates.map((estimate, index) => (
+                  <BusCard key={index} estimate={estimate} />
+                ))
+              : "No schedule available"}
+          </div>
         </div>
       </div>
     </>
