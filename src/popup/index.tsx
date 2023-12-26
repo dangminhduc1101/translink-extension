@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BusEstimate } from "types";
+import { BusEstimate, Status } from "lib/types";
 import BusCard from "./components/BusCard";
 
 const Popup: React.FC = () => {
@@ -7,13 +7,20 @@ const Popup: React.FC = () => {
   const [busEstimates, setBusEstimates] = useState<BusEstimate[]>();
 
   useEffect(() => {
-    browser.runtime
-      .sendMessage("status-update")
-      .then(response => {
-        setBusEstimates(response.estimates);
-        setCurrentTime(response.time);
-      })
-      .catch(error => console.error(error));
+    const update = async () => {
+      try {
+        const { estimates, time }: Status = await browser.runtime.sendMessage(
+          "update"
+        );
+        setBusEstimates(estimates);
+        setCurrentTime(time);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    update();
+    const intervalId = setInterval(update, 60 * 1000);
+    return () => clearInterval(intervalId);
   }, []);
 
   return (

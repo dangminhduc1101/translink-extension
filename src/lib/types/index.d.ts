@@ -6,16 +6,21 @@ export interface StopEstimate {
 
 export interface Schedule {
   Destination: string;
-  ExpectedLeaveTime: string;
-  ExpectedCountdown: number;
   ScheduleStatus: string;
   CancelledTrip: boolean;
   CancelledStop: boolean;
+  ExpectedLeaveTime: string;
+  ExpectedCountdown: number | string;
   LastUpdate: string;
 }
 
 export interface BusEstimate {
   RouteNo: string;
   RouteName: string;
-  Schedule: Schedule
+  Schedule: Schedule;
+}
+
+export interface Status {
+  time: string;
+  estimates: BusEstimate[];
 }

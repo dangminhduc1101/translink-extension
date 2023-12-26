@@ -1,5 +1,5 @@
 import React from "react";
-import { BusEstimate } from "types";
+import { BusEstimate } from "lib/types";
 
 interface BusCardProps {
   estimate: BusEstimate
