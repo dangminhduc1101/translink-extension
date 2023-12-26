@@ -1,7 +1,11 @@
-import { BusEstimate, StopEstimate, Schedule } from "../types";
+import { BusEstimate, StopEstimate, Schedule } from "types";
 import API from "./api.json";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat);
 
-let busEstimates: BusEstimate[] = [];
+let busEstimates: BusEstimate[];
+let currentTime: string;
 
 const getStopEstimates = async (
   stopId: number,
@@ -33,23 +37,36 @@ const toBusEstimates = (data: StopEstimate[] | null): BusEstimate[] =>
   data
     ? data.flatMap((estimate: StopEstimate) =>
         estimate.Schedules.map((schedule: Schedule) => ({
-          Schedule: schedule,
+          Schedule: {
+            Destination: schedule.Destination,
+            ScheduleStatus: schedule.ScheduleStatus,
+            CancelledTrip: schedule.CancelledTrip,
+            CancelledStop: schedule.CancelledStop,
+            LastUpdate: dayjs(schedule.LastUpdate, 'hh:mm:ss a').format('h:mm A'),
+            ExpectedLeaveTime: dayjs(schedule.ExpectedLeaveTime, 'h:mma YYYY-MM-DD').format('h:mm A'),
+            ExpectedCountdown: schedule.ExpectedCountdown,
+          },
           RouteNo: estimate.RouteNo,
           RouteName: estimate.RouteName,
         }))
-      )
+      ).sort((a, b) => a.Schedule.ExpectedCountdown - b.Schedule.ExpectedCountdown)
     : [];
 
-const updateBusEstimates: () => Promise<void> = (async () => {
-  busEstimates = toBusEstimates(await getStopEstimates(51862, 240));
-})
+async function updateBusEstimates(): Promise<void> {
+  busEstimates = toBusEstimates(await getStopEstimates(51862, 120));
+}
 
-browser.runtime.onInstalled.addListener(() => {
+function updateCurrentTime(): void {
+  currentTime = dayjs().format('h:mm A')
+}
+
+browser.runtime.onStartup.addListener(() => {
   updateBusEstimates();
+  updateCurrentTime();
 });
 
 browser.runtime.onMessage.addListener((message, _, sendResponse) => {
-  if (message.action == "get-bus-estimates") {
-    sendResponse(busEstimates);
+  if (message === "status-update") {
+    sendResponse({estimates: busEstimates, time: currentTime});
   }
 });

@@ -1,48 +1,37 @@
-import dayjs, { Dayjs } from "dayjs";
 import React, { useEffect, useState } from "react";
-import { BusEstimate } from "../types";
+import { BusEstimate } from "types";
 import BusCard from "./components/BusCard";
 
 const Popup: React.FC = () => {
-  const currentTime: Dayjs = dayjs();
-  const [busEstimates, setBusEstimates] = useState<BusEstimate[]>([]);
+  const [currentTime, setCurrentTime] = useState<string>();
+  const [busEstimates, setBusEstimates] = useState<BusEstimate[]>();
 
   useEffect(() => {
     browser.runtime
-      .sendMessage({ action: "get-bus-estimates" })
-      .then((response) => {
-        setBusEstimates(response);
+      .sendMessage("status-update")
+      .then(response => {
+        setBusEstimates(response.estimates);
+        setCurrentTime(response.time);
       })
-      .catch((error) => console.error(error));
+      .catch(error => console.error(error));
   }, []);
 
   return (
-    <>
-      <div className="text-center font-bold text-2xl py-5 bg-gray-800 text-neutral-200 flex justify-center">
-        <div className="flex">
-          <div className="self-center mr-8">
-            <img
-              src="/translink.jpg"
-              className="w-14 h-14"
-              alt="Translink Logo"
-            />
-          </div>
-          <div className="self-center">{currentTime.format("hh:mm:ss a")}</div>
+    <div className="w-[320] h-[480]">
+      <div className="flex justify-between items-center h-[10%]">
+        <img src="/translink.jpg" alt="Translink Logo" />
+        {currentTime}
+      </div>
+      <div className="flex justify-center h-4/5 overflow-y-scroll">
+        <div>
+          {busEstimates && busEstimates.length > 0
+            ? busEstimates.map((estimate, index) => (
+                <BusCard key={index} estimate={estimate} />
+              ))
+            : "No schedule available"}
         </div>
       </div>
-
-      <div className="bg-gray-800 min-h-screen text-gray-100 flex justify-center">
-        <div className="max-w-5xl w-full">
-          <div>
-            {busEstimates && busEstimates.length > 0
-              ? busEstimates.map((estimate, index) => (
-                  <BusCard key={index} estimate={estimate} />
-                ))
-              : "No schedule available"}
-          </div>
-        </div>
-      </div>
-    </>
+    </div>
   );
 };
 
