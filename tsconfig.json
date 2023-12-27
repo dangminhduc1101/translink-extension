@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
+    "module": "ESNext",
     "baseUrl": "./src",
     "jsx": "react",
     "esModuleInterop": true,
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true
   }
 }

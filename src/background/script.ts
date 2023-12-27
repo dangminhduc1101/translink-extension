@@ -1,6 +1,8 @@
-import { BusEstimate, Status } from "lib/types";
+import { BusEstimate, Status, StopEstimate } from "lib/types";
 import Translink from "lib/translink"
 import Utils from "lib/utils"
+
+const timeframe: number = 120;
 
 let status: Status = {
   estimates: null,
@@ -8,7 +10,7 @@ let status: Status = {
 };
 
 async function updateEstimates(): Promise<void> {
-  status.estimates = Utils.parseBusEstimates(await Translink.getStopEstimates(51862, 120));
+  status.estimates = Utils.parseBusEstimates(await Translink.getStopEstimates(51862, timeframe), timeframe);
 }
 updateEstimates();
 setInterval(updateEstimates, 3 * 60 * 1000);

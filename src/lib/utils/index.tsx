@@ -8,17 +8,23 @@ import { BusEstimate, StopEstimate, Schedule } from "lib/types";
 
 export default {
   getCurrentTime: (): string => dayjs().format("h:mm A"),
-  parseBusEstimates: (data: StopEstimate[] | null): BusEstimate[] =>
+  parseBusEstimates: (
+    data: StopEstimate[] | null,
+    timeframe: number
+  ): BusEstimate[] =>
     data
       ? data
           .flatMap((estimate: StopEstimate) =>
             estimate.Schedules.map((schedule: Schedule) => {
               const update = dayjs(schedule.LastUpdate, "hh:mm:ss a");
               const leave = dayjs(schedule.ExpectedLeaveTime, "h:mma");
-              const countdown = Math.min(
+              let countdown = Math.min(
                 schedule.ExpectedCountdown as number,
                 Math.round(dayjs.duration(leave.diff(dayjs())).as("m"))
               );
+              if (Math.abs(countdown) > timeframe) {
+                countdown += 24 * 60;
+              }
               return {
                 Schedule: {
                   Destination: schedule.Destination,
@@ -39,15 +45,18 @@ export default {
               a.Schedule.ExpectedCountdown - b.Schedule.ExpectedCountdown
           )
           .map((estimate: BusEstimate) => {
-            let countdown: number | string = estimate.Schedule.ExpectedCountdown as number;
+            let countdown: number | string = estimate.Schedule
+              .ExpectedCountdown as number;
             if (countdown < 0) {
               countdown = `${Math.abs(countdown)}m ago`;
+            } else if (countdown < 1) {
+              countdown = "now";
             } else if (countdown < 60) {
               countdown = `${countdown}m`;
             } else {
               const hours = Math.floor(countdown / 60);
               const minutes = countdown % 60;
-              countdown = `${hours}h${minutes > 0 ? ` ${minutes}m` : ''}`;
+              countdown = `${hours}h${minutes > 0 ? ` ${minutes}m` : ""}`;
             }
             estimate.Schedule.ExpectedCountdown = countdown;
             return estimate;
