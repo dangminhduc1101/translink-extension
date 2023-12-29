@@ -2,7 +2,7 @@ import { BusEstimate, Status, StopEstimate } from "lib/types";
 import Translink from "lib/translink"
 import Utils from "lib/utils"
 
-const timeframe: number = 120;
+const timeframe: number = 300;
 
 let status: Status = {
   estimates: null,
