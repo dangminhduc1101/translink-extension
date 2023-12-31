@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 
-const ComboBox = () => {
+interface PickerProps {
+  classNames?: string
+}
+
+const Picker = () => {
   const [selectedOption, setSelectedOption] = useState('option1');
 
   const handleSelectChange = (e) => {
@@ -21,12 +25,9 @@ const ComboBox = () => {
         <option value="option1">Option 1</option>
         <option value="option2">Option 2</option>
         <option value="option3">Option 3</option>
-        {/* Add more options as needed */}
       </select>
-
-      <p className="mt-2 text-sm text-gray-500">You selected: {selectedOption}</p>
     </div>
   );
 }
 
-export default ComboBox;
+export default Picker;

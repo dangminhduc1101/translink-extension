@@ -2,11 +2,11 @@ import React from "react";
 import Icons from "lib/icons";
 
 interface HeaderProps {
-  time: string;
   classNames?: string;
+  time: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ time, classNames }: HeaderProps) => {
+const Header: React.FC<HeaderProps> = ({ classNames, time }: HeaderProps) => {
   const styles = `${classNames} flex justify-between items-center py-2 px-4`;
   return (
     <div className={styles}>

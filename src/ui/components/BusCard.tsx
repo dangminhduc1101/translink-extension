@@ -2,13 +2,12 @@ import React from "react";
 import { BusEstimate } from "lib/types";
 
 interface BusCardProps {
-  estimate: BusEstimate;
   classNames?: string;
+  estimate: BusEstimate;
 }
 
 const BusCard: React.FC<BusCardProps> = ({
-  estimate,
-  classNames,
+  classNames, estimate
 }: BusCardProps) => {
   const { RouteNo, RouteName, Schedule } = estimate;
   const styles = `${classNames} flex justify-between items-center p-2 border-2 rounded-md border-black`;

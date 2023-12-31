@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import ComboBox from 'ui/components/ComboBox';
+import React from 'react';
+import Picker from 'ui/components/Picker';
 
 const SettingsPage = () => {
   return (
@@ -10,14 +10,7 @@ const SettingsPage = () => {
         <label htmlFor="theme" className="block text-sm font-medium text-gray-700">
           Choose a theme:
         </label>
-        <ComboBox/>
-      </div>
-
-      <div className="mt-8">
-        <h3 className="text-lg font-semibold mb-4">Preview</h3>
-        <div className={`p-4rounded-md`}>
-          This is a preview of the selected theme.
-        </div>
+        <Picker/>
       </div>
     </div>
   );

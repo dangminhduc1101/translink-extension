@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { BusEstimate, Status } from "lib/types";
+import { Status } from "lib/types";
 import Header from "./components/Header";
 import NavigationBar from "./components/NavigationBar";
 import {
@@ -7,22 +7,20 @@ import {
   Routes,
   Route,
   Navigate,
+  Outlet,
 } from "react-router-dom";
-import BusPage from "./pages/BusPage";
+import SchedulePage from "./pages/SchedulePage";
 import SettingsPage from "./pages/SettingsPage";
+import StatusPage from "./pages/StatusPage";
 
 const Popup: React.FC = () => {
-  const [currentTime, setCurrentTime] = useState<string>();
-  const [busEstimates, setBusEstimates] = useState<BusEstimate[]>();
+  const [currentStatus, setCurrentStatus] = useState<Status>();
 
   useEffect(() => {
     const update = async () => {
       try {
-        const { estimates, time }: Status = await browser.runtime.sendMessage(
-          "update"
-        );
-        setBusEstimates(estimates);
-        setCurrentTime(time);
+        const status: Status = await browser.runtime.sendMessage("update");
+        setCurrentStatus(status);
       } catch (error) {
         console.error(error);
       }
@@ -34,28 +32,35 @@ const Popup: React.FC = () => {
 
   return (
     <div className="flex flex-col justify-between w-[320] h-[480]">
-      <Header time={currentTime} classNames="h-[10%] mt-1" />
-      {busEstimates !== undefined ? (
-        <MemoryRouter>
-          <Routes>
-            <Route index element={<Navigate to="/schedule" />} />
-            <Route
-              path="/schedule"
-              element={
-                busEstimates !== null ? (
-                  <BusPage estimates={busEstimates} classNames="h-4/5" />
-                ) : (
-                  <Navigate to="/error" />
-                )
-              }
-            />
-            <Route path="/error" element="Error" />
-            <Route path="/settings" element={<SettingsPage/>} />
-          </Routes>
-          <NavigationBar classNames="h-[10%] mb-1" />
-        </MemoryRouter>
+      {currentStatus === undefined ? (
+        <StatusPage text="Loading" />
       ) : (
-        "Loading"
+        <React.Fragment>
+          <Header time={currentStatus.time} classNames="h-[10%] mt-1" />
+          <MemoryRouter>
+            <Routes>
+              <Route path="/" element={<Outlet />}>
+                <Route index element={<Navigate to="/schedule"/>}/>
+                <Route
+                  path="schedule"
+                  element={
+                    <SchedulePage
+                      estimates={currentStatus.estimates}
+                      classNames="h-4/5"
+                    />
+                  }
+                />
+                <Route path="settings" element={<SettingsPage />} />
+                <Route path="error" element={<Outlet />}>
+                  <Route path="no-schedule" />
+                  <Route path="no-network" />
+                  <Route path="no-api-key" />
+                </Route>
+              </Route>
+            </Routes>
+            <NavigationBar classNames="h-[10%] mb-1" />
+          </MemoryRouter>
+        </React.Fragment>
       )}
     </div>
   );

@@ -9,7 +9,7 @@ interface NavigationBarProps {
 const NavigationBar: React.FC<NavigationBarProps> = ({
   classNames,
 }: NavigationBarProps) => {
-  const styles = `${classNames} flex justify-around p-1 bottom`;
+  const styles = `${classNames} flex justify-around p-1`;
   return (
     <div className={styles}>
       <Link
