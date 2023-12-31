@@ -1,4 +1,4 @@
-import { BusEstimate, Status, StopEstimate } from "lib/types";
+import { Status } from "lib/types";
 import Translink from "lib/translink"
 import Utils from "lib/utils"
 

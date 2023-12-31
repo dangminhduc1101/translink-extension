@@ -7,11 +7,13 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ time, classNames }: HeaderProps) => {
-  const styles = `${classNames} flex justify-between items-center p-2`;
+  const styles = `${classNames} flex justify-between items-center py-2 px-4`;
   return (
     <div className={styles}>
-      <img src={Icons.Logo} style={{ height: "120%" }} />
-      <p className="text-3xl font-bold">{time}</p>
+      <a href="https://www.translink.ca" style={{ height: "100%" }}>
+        <img src={Icons.Logo} style={{ height: "100%" }}/>
+      </a>
+      <p className="text-2xl font-bold">{time}</p>
     </div>
   );
 };
